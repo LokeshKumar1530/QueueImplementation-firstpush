@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File and Folder Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: lightblue;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: Dark charcoal;
+        }
+
+        .folder, .file {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .folder {
+            color: #F1C40F;
+            cursor: pointer;
+        }
+
+        .file {
+            color: #28a745;
+            cursor: pointer;
+        }
+
+        .icon {
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .folder .options-icon, .file .options-icon {
+            margin-left: auto;
+            margin-right: 10px;
+            font-size: 18px;
+	    background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px; 
+        }
+
+ 	.folder.options-icon,.file .options-icon:hover {
+            background-color: #0056b3;
+        }
+
+        .options-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-radius: 5px;
+            width: 150px;
+        }
+
+	 
+	#folderstructure{
+		background-color:pink;
+	}
+        .options-menu-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .options-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .options-menu-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        #backButton {
+            display: inline-block;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        #backButton:hover {
+            background-color: #0056b3;
+        }
+
+        form {
+            margin-bottom: 20px;
+            background-color: pink;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        form input[type="text"], form input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        form button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+	#logoutButton{
+	position : absolute;
+	top : 10px;
+	right : 10px;
+	padding : 5px 10px;
+	background-color : Red;
+	color : white;
+	border : none;
+	border-radius : 3px;
+	cursor : pointer;
+	}
+
+.styled-dropdown {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.styled-button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.styled-button:hover {
+    background-color: #0056b3;
+}
+
+
+#moveToDropdown {
+    display: none;
+    position: fixed;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    background-color: 'rgba(0, 0, 0, 0.5)';
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    width: 300px; 
+    max-height: 300px;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+#moveToDropdown select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+#moveToDropdown button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#moveToDropdown button:hover {
+    background-color: #0056b3;
+}
+
+#moveToDropdown select option {
+    padding: 10px;
+    font-size: 14px;
+}
+
+#moveToDropdown .close-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+}
+
+#moveToDropdown .close-button:hover {
+    background-color: #c82333;
+}
+
+#h1{
+
+	text-align:center;
+	font-size: 50px;
+}
+    </style>
+</head>
+<body>
+    <h1 id="h1">Zoho</h1>
+
+    <h2>Create Folder</h2>
+    <form id="folderForm">
+        <label for="folderName">Folder Name:</label>
+        <input type="text" id="folderName" name="name" required>
+        <input type="hidden" id="parentId" name="parentId" value="0">
+        <button type="submit">Create Folder</button>
+    </form>
+
+    <h2>Upload File</h2>
+    <form id="fileForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" multiple required>
+        <input type="hidden" id="folderId" name="folderId" value="0">
+        <button type="submit">Upload File</button>
+    </form>
+
+    <button  id = "logoutButton"> LogOut</button>
+   
+    <h2>Folder Structure</h2>
+    <div id="folderStructure"> </div>
+        
+   <div id = "moveToDropdown" style = "display:none;"></div>
+    
+
+    <script>
+    $(document).ready(function() {
+        
+        loadContent(0);
+	
+        $('#folderForm').on('submit', function(event) {
+            event.preventDefault();
+            createFolder();
+        });
+
+        $('#fileForm').on('submit', function(event) {
+            event.preventDefault();
+            uploadFiles();
+        });
+	
+	document.getElementById('logoutButton').addEventListener('click', function() {
+        var xhr = new XMLHttpRequest();
+   	 xhr.open('POST', 'logoutServlet', true); 
+ 	   xhr.onreadystatechange = function () {
+    	    if (xhr.readyState === 4 && xhr.status === 200) {
+            var response = JSON.parse(xhr.responseText);
+	    alert(response.message);
+            window.location.replace('login.html');
+ 
+      	     }
+  	  };
+ 	   xhr.send(); 
+	});
+
+	
+
+        $('#folderStructure').on('click', '#backButton', function() {
+            let parentId = $('#parentId').val();
+            getParentFolderId(parentId);
+        });
+
+        $('#folderStructure').on('click', '.folder', function(event) {
+            if (event.which === 1) { 
+                let folderId = $(this).data('folder-id');
+                $('#parentId').val(folderId);
+                loadContent(folderId);
+            }
+        });
+
+        $('#folderStructure').on('click', '.file', function(event) {
+            
+                let fileId = $(this).data('file-id');
+                viewFile(fileId);
+            
+        });
+
+        $('#folderStructure').on('click', '.options-icon', function(event) {
+            event.stopPropagation();
+            $(this).siblings('.options-menu').toggle();
+        });
+
+       
+        $('#folderStructure').on('click', '.delete-option', function(event) {
+            event.stopPropagation();
+            if ($(this).closest('.folder').length > 0) {
+                let folderId = $(this).closest('.folder').data('folder-id');
+                deleteFolder(folderId);
+            } else if ($(this).closest('.file').length > 0) {
+                let fileId = $(this).closest('.file').data('file-id');
+                deleteFile(fileId);
+            }
+        });
+
+$('#folderStructure').on('click', '.move-to-option', function(event) {
+    event.stopPropagation(); 
+    let itemElement = $(this).closest('.folder, .file');
+console.log(itemElement);
+    let itemId = itemElement.data('folder-id') || itemElement.data('file-id');
+    let itemType = itemElement.hasClass('folder') ? 'folder' : 'file';
+
+    $.ajax({
+        url: 'fetchUserFolders',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            console.log('Received data:', data);
+
+            if (data && Array.isArray(data.folders)) {
+               
+                let folders = buildFolderTree(data.folders);
+                
+                
+                let dropdownHtml = '<select id="targetFolderId" class="styled-dropdown">';
+                dropdownHtml += buildDropdownOptions(folders, 0, 0);
+                dropdownHtml += '</select>';
+                dropdownHtml += '<button id="confirmMove" class="styled-button">Move</button>';
+                dropdownHtml += '<button class="close-button styled-button" id="closeMoveDropdown">Close</button>';
+
+                $('#moveToDropdown').html(dropdownHtml).show();
+
+                $('#confirmMove').off('click').on('click', function() {
+                    let selectedFolderId = $('#targetFolderId').val();
+                    moveItem(itemId, selectedFolderId, itemType);
+                    $('#moveToDropdown').hide();
+                });
+
+                $('#closeMoveDropdown').off('click').on('click', function() {
+                    $('#moveToDropdown').hide();
+                });
+            } else {
+                console.error('Expected data.folders to be an array, but received:', data ? data.folders : 'No data received');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching user folders:', status, error);
+        }
+    });
+});
+
+function buildFolderTree(folders) {
+    let folderMap = {};
+    let roots = [];
+    
+    folders.forEach(folder => {
+        folderMap[folder.folder_id] = folder;
+        folder.subfolders = [];
+    });
+    
+    folders.forEach(folder => {
+        if (folder.parent_id === 0) {
+            roots.push(folder);
+        } else {
+            let parent = folderMap[folder.parent_id];
+            if (parent) {
+                parent.subfolders.push(folder);
+            }
+        }
+    });
+    
+    return roots;
+}
+
+function buildDropdownOptions(folders, parentId, level) {
+    let optionsHtml = '';
+    
+    folders.forEach(folder => {
+        if (folder.parent_id === parentId) {
+            optionsHtml += `<option value="${folder.folder_id}">${'&nbsp;'.repeat(level * 4)}${folder.name}</option>`;
+            optionsHtml += buildDropdownOptions(folder.subfolders, folder.folder_id, level + 1);
+        }
+    });
+    
+    return optionsHtml;
+}
+
+
+$('#folderStructure').on('click', '.copy-option', function(event) {
+    event.stopPropagation(); 
+    let itemElement = $(this).closest('.file');
+    let itemId = itemElement.data('file-id');
+    let itemType = 'file';
+
+    $.ajax({
+        url: 'fetchUserFolders',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            console.log('Received data:', data); 
+           
+            if (data && Array.isArray(data.folders)) {
+              
+                let folders = buildFolderTree(data.folders);
+                
+               
+                let dropdownHtml = '<select id="targetFolderId" class="styled-dropdown">';
+                dropdownHtml += buildDropdownOptions(folders, 0, 0);
+                dropdownHtml += '</select>';
+                dropdownHtml += '<button id="confirmCopy" class="styled-button">Paste</button>';
+                dropdownHtml += '<button class="close-button styled-button" id="closeCopyDropdown">Close</button>';
+
+                $('#moveToDropdown').html(dropdownHtml).show();
+
+                $('#confirmCopy').off('click').on('click', function() {
+                    let selectedFolderId = $('#targetFolderId').val();
+                    copyFile(itemId, selectedFolderId);
+                    $('#moveToDropdown').hide();
+                });
+
+                $('#closeCopyDropdown').off('click').on('click', function() {
+                    $('#moveToDropdown').hide();
+                });
+            } else {
+                console.error('Expected data.folders to be an array, but received:', data ? data.folders : 'No data received');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching user folders:', status, error);
+        }
+    });
+});
+
+function buildFolderTree(folders) {
+    let folderMap = {};
+    let roots = [];
+    
+    folders.forEach(folder => {
+        folderMap[folder.folder_id] = folder;
+        folder.subfolders = [];
+    });
+    
+    folders.forEach(folder => {
+        if (folder.parent_id === 0) {
+            roots.push(folder);
+        } else {
+            let parent = folderMap[folder.parent_id];
+            if (parent) {
+                parent.subfolders.push(folder);
+            }
+        }
+    });
+    
+    return roots;
+}
+
+function buildDropdownOptions(folders, parentId, level) {
+    let optionsHtml = '';
+    
+    folders.forEach(folder => {
+        if (folder.parent_id === parentId) {
+            optionsHtml += `<option value="${folder.folder_id}">${'&nbsp;'.repeat(level * 4)}${folder.name}</option>`;
+            optionsHtml += buildDropdownOptions(folder.subfolders, folder.folder_id, level + 1);
+        }
+    });
+    
+    return optionsHtml;
+}
+
+$('#folderStructure').on('click', '.share-option', function(event) {
+    event.stopPropagation(); 
+    let itemElement = $(this).closest('.file');
+    let itemId = itemElement.data('file-id');
+    let itemType =  'file';
+
+    $.ajax({
+        url: 'fetchUsers',
+        type: 'GET',
+        dataType: 'json', 
+        success: function(data) {
+            console.log('Received data:', data); 
+           
+            if (data && Array.isArray(data.users)) {
+                let dropdownHtml = '<select id="targetUserId">';
+                
+                data.users.forEach(user => {
+                    dropdownHtml += `<option value="${user.user_id}">${user.username}</option>`;
+                });
+                
+                dropdownHtml += '</select>';
+                dropdownHtml += '<button id="confirmSend">Send</button>';
+                dropdownHtml += '<button class="close-button" id="close">Close</button>';
+
+                $('#moveToDropdown').html(dropdownHtml).show();
+
+                $('#confirmSend').off('click').on('click', function() {
+                    let selectedUserId = $('#targetUserId').val();
+console.log(selectedUserId);
+                    sendFile(itemId, selectedUserId);
+                    $('#moveToDropdown').hide();
+                });
+
+                $('#close').off('click').on('click', function() {
+                    $('#moveToDropdown').hide();
+                });
+            } else {
+                console.error('Expected data.users to be an array, but received:', data ? data.users : 'No data received');
+            }
+        }
+    });
+});
+
+        function loadContent(parentId) {
+            $('#folderId').val(parentId);
+            loadFolders(parentId);
+            loadFiles(parentId);
+             
+        }
+
+        function loadFolders(parentId) {
+            $.ajax({
+                url: 'fetchFolders',
+                type: 'GET',
+                data: { parentId: parentId },
+                dataType: 'json',
+                success: function(data) {
+                    let folderStructure = $('#folderStructure');
+                    folderStructure.empty();
+
+                    if (parentId !== 0 ) {
+                        let backButton = $('<button>')
+                            .text('Back')
+                            .attr('id', 'backButton');
+                        folderStructure.append(backButton);
+                    }
+
+                    $.each(data, function(index, folder) {
+                        let folderElement = $('<div>')
+                            .addClass('folder')
+                            .attr('data-folder-id', folder.folder_id)
+                            .append($('<i>').addClass('icon fas fa-folder'))
+                            .append($('<span>').text(folder.name))
+                            .append($('<i>').addClass('options-icon fas fa-ellipsis-v'))
+                            .append($('<div>').addClass('options-menu')
+                                .append($('<div>').addClass('options-menu-item delete-option').text('Delete'))
+                                .append($('<div>').addClass('options-menu-item move-to-option').text('Move to...'))
+                            );
+                        folderStructure.append(folderElement);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading folders:', error);
+                }
+            });
+        }
+
+function loadFiles(parentId) {
+    $.ajax({
+        url: 'fetchFiles',
+        type: 'GET',
+        data: { folderId: parentId },
+        dataType: 'json',
+        success: function(data) {
+            let folderStructure = $('#folderStructure');
+            console.log('Data received:', data);
+
+
+            $.each(data, function(index, file) {
+                let fileElement = $('<div>')
+                    .addClass('file')
+                    .attr('data-file-id', file.file_id)
+                    .append($('<i>').addClass('icon fas fa-file'))
+                    .append($('<span>').text(file.name))
+                    .append($('<i>').addClass('options-icon fas fa-ellipsis-v'))
+                    .append($('<div>').addClass('options-menu')
+                        .append($('<div>').addClass('options-menu-item delete-option').text('Delete'))
+                        .append($('<div>').addClass('options-menu-item move-to-option').text('Move to...'))
+                        .append($('<div>').addClass('options-menu-item share-option').text('Share'))
+                        .append($('<div>').addClass('options-menu-item copy-option').text('Copy'))
+                    );
+                folderStructure.append(fileElement);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading files:', error);
+        }
+    });
+}
+
+        function getParentFolderId(folderId) {
+            $.ajax({
+                url: 'getParentFolderId',
+                type: 'GET',
+                data: { folderId: folderId },
+                dataType: 'text',
+                success: function(parentId) {
+                    let parsedParentId = parseInt(parentId);
+                    loadContent(parsedParentId);
+                    $('#parentId').val(parsedParentId);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching parent ID:', error);
+                }
+            });
+        }
+
+function createFolder() {
+    let folderName = $('#folderName').val();
+    let parentId = $('#parentId').val();
+
+    $.ajax({
+        url: 'createFolder',
+        type: 'POST',
+        data: { name: folderName, parentId: parentId },
+        success: function(data) {
+            loadContent(parentId);
+        },
+        error: function(xhr, status, error) {
+            if (xhr.status === 409) { 
+                let response = JSON.parse(xhr.responseText);
+                console.log(response.message);
+                alert(response.message); 
+            } else {
+                console.error('Error creating folder:', error);
+            }
+        }
+    });
+}
+
+
+
+        function uploadFiles() {
+            let formData = new FormData($('#fileForm')[0]);
+            let folderId = $('#folderId').val();
+            
+            $.ajax({
+                url: 'uploadFile',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(data) {
+                    console.log('Files uploaded successfully:', data);
+                    loadFiles(folderId); 
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error uploading files:', error);
+                }
+            });
+        }
+
+        function deleteFolder(folderId) {
+            $.ajax({
+                url: 'deleteFolder',
+                type: 'POST',
+                data: { folderId: folderId },
+                success: function(data) {
+                    console.log('Folder deleted:', data);
+                    loadContent($('#parentId').val());
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting folder:', error);
+                }
+            });
+        }
+
+        function deleteFile(fileId) {
+            $.ajax({
+                url: 'deleteFile',
+                type: 'POST',
+                data: { fileId: fileId },
+                success: function(data) {
+                    console.log('File deleted:', data);
+                    loadContent($('#parentId').val());
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting file:', error);
+                }
+            });
+        }
+
+         function moveItem(itemId, folderId, itemType) {
+            let url = itemType === 'folder' ? 'moveFolder' : 'moveFile';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    itemId: itemId,
+                    targetFolderId: folderId
+                },
+                success: function(data) {
+                    console.log(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} moved successfully:`, data);
+                    loadContent($('#parentId').val());
+                },
+                error: function(xhr, status, error) {
+                    console.error(`Error moving ${itemType}:`, error);
+                }
+            });
+        }
+
+
+function viewFile(fileId) {
+    $.ajax({
+        url: 'viewFileServlet',
+        type: 'GET',
+        data: { fileId: fileId },
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function(blob, status, xhr) {
+           
+            const contentType = xhr.getResponseHeader('Content-Type');
+            displayFile(blob, contentType);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error viewing file content:', error);
+            alert('Failed to view file content. Please try again later.');
+        }
+    });
+}
+
+
+function displayFile(blob, contentType) {
+    const url = URL.createObjectURL(blob);
+
+    let element;
+    switch (true) {
+        case contentType.startsWith('text/'):
+            element = document.createElement('pre');
+            fetch(url)
+                .then(response => response.text())
+                .then(text => {
+                    element.textContent = text;
+                    showModal(element);
+                });
+            break;
+        case contentType.startsWith('image/'):
+            element = document.createElement('img');
+            element.src = url;
+            element.style.maxWidth = '100%';
+            element.style.maxHeight = '100%';
+            showModal(element);
+            break;
+        case contentType.startsWith('video/'):
+            element = document.createElement('video');
+            element.src = url;
+            element.controls = true;
+            element.style.maxWidth = '100%';
+            element.style.maxHeight = '100%';
+            showModal(element);
+            break;
+        case contentType.startsWith('application/pdf'):
+            element = document.createElement('iframe');
+            element.src = url;
+	    element.controls = true;
+            element.style.width = '100%';
+            element.style.height = '100%'; 
+            showModal(element);
+            break;
+        default:
+            alert('Unsupported file type.');
+            break;
+    }
+
+
+    document.querySelector('.modal-close').onclick = function() {
+        URL.revokeObjectURL(url);
+    };
+}
+
+function showModal(contentElement) {
+   
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; 
+    overlay.style.zIndex = '999'; 
+
+   
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.position = 'fixed';
+    modal.style.top = '50%';
+    modal.style.left = '50%';
+    modal.style.transform = 'translate(-50%, -50%)';
+    modal.style.backgroundColor = 'white';
+    modal.style.padding = '20px';
+    modal.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
+    modal.style.zIndex = '1000';
+    modal.style.maxWidth = '90%'; 
+    modal.style.maxHeight = '80%';
+    modal.style.overflow = 'auto'; 
+    
+
+    
+    const closeButton = document.createElement('button');
+    closeButton.className = 'modal-close';
+    closeButton.textContent = 'Close';
+    closeButton.style.position = 'fixed';
+    closeButton.style.top = '10px';
+    closeButton.style.right = '10px';
+    closeButton.style.padding = '5px 10px';
+    closeButton.style.backgroundColor = 'Red';
+    closeButton.style.color = 'white';
+    closeButton.style.border = 'none';
+    closeButton.style.borderRadius = '3px';
+    closeButton.style.cursor = 'pointer';
+
+   
+    modal.appendChild(closeButton);
+    modal.appendChild(contentElement);
+
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+
+   
+    closeButton.addEventListener('click', function() {
+        document.body.removeChild(modal);
+        document.body.removeChild(overlay);
+    });
+
+   
+    overlay.addEventListener('click', function() {
+        document.body.removeChild(modal);
+        document.body.removeChild(overlay);
+    });
+}
+
+function sendFile(fileId, userId)
+{
+    $.ajax({
+	url : 'sendFile',
+	type : 'POST',
+	data : {
+		fileId : fileId,
+		targetUserId : userId
+  	},
+	success:function(data)
+	{
+	  console.log('success');
+	  alert("Sent");
+	}
+      });
+}
+
+function copyFile(fileId, folderId)
+{
+	$.ajax({
+	url : 'copyFile',
+	type : 'POST',
+	data : {
+		fileId : fileId,
+		targetFolderId : folderId 
+         },
+	success:function(data)
+	{
+	  alert("Copied");
+	}
+      });
+}
+     
+    });
+    </script>
+</body>
+</html>

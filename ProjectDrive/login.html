@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <script src="jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        #loginStatus {
+            margin-top: 10px;
+            color: #ff0000;
+        }
+
+        #signupButton {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #signupButton:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br>
+            
+            <input type="submit" value="Login">
+        </form>
+
+        <p id="loginStatus"></p>
+
+        <button id="signupButton">Sign Up</button>
+    </div>
+    
+    <script>
+       
+        $(document).ready(function() {
+            $('#loginForm').submit(function(event) {
+                event.preventDefault(); 
+                var username = $('#username').val();
+                var password = $('#password').val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'LoginServlet', 
+                    data: {
+                        username: username,
+                        password: password
+                    },
+                    success: function(response) {
+                        
+                        $('#loginStatus').text('Login successful. Redirecting...');
+                        
+                        window.location.replace('index.html');
+                    },
+                    error: function(xhr, status, error) {
+                        
+                        $('#loginStatus').text('Error: ' + error);
+                        
+                        $('#password').val('');
+                    }
+                });
+            });
+
+            $('#signupButton').click(function() {
+                window.location.href = 'signup.html'; 
+            });
+        });
+    </script>
+</body>
+</html>
